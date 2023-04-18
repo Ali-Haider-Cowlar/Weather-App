@@ -2,5 +2,5 @@
 
 
 <div align="center">
-  <h1>Cowlar Todo App</h1>
+  <h1>Cowlar Weather App</h1>
 </div>
