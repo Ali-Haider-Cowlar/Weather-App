@@ -5,8 +5,7 @@ const userRoutes = require("./routes/user-routes");
 const weatherRoutes = require("./routes/weather-routes");
 const Influx = require("influx");
 const verifyToken = require("./middleware/verifyToken");
-const cookieParser = require('cookie-parser');
-
+const cookieParser = require("cookie-parser");
 
 const connectDB = require("./config/dbConn");
 const PORT = process.env.MONGO_PORT || 5000;
@@ -21,11 +20,9 @@ app.use(cookieParser());
 app.use(express.json());
 app.use(cors());
 
-
 //Routes
 app.use("/user", userRoutes); // localhost:5000/user
 app.use("/api", verifyToken, weatherRoutes);
-
 
 //Database Connection
 async function startServer() {
