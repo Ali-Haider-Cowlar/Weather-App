@@ -27,11 +27,18 @@ app.use("/user", userRoutes); // localhost:5000/user
 //   port: config.influx.port,
 //   database: config.influx.database,
 // });
+// const influx = new Influx.InfluxDB({
+//   host: config.influx.host,
+//   port: config.influx.port,
+//   database: config.influx.database,
+// });
 app.get("/api/weather", async (req, res) => {
+  const { longitude, latitude } = req.query;
   const { longitude, latitude } = req.query;
 
   try {
     const { data } = await axios.get(
+      `http://api.weatherapi.com/v1/current.json?key=${config.apiKey}&q=${latitude},${longitude}`
       `http://api.weatherapi.com/v1/current.json?key=${config.apiKey}&q=${latitude},${longitude}`
     );
     // Write weather data to InfluxDB
