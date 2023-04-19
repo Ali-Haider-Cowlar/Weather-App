@@ -29,14 +29,14 @@ module.exports.addUser = async (name, email, cnic, password) => {
 //----------------------------------------------------------------------------------------------
 
 module.exports.updateUser = async (id, name, email, cnic, password) => {
-  let user = await User.findByIdAndUpdate(id, {
-    userName,
-    completed,
-    completedTime,
-  });
+  let user = await User.findById(id);
   if (!user) {
     throw new Error("Unable To Update By this ID");
   }
+  user.name = name;
+  user.email = email;
+  user.cnic = cnic;
+  user.password = password;
   user = await user.save();
   return user;
 };

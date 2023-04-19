@@ -14,7 +14,7 @@ connectDB();
 const cors = require("cors");
 const app = express();
 
-// Middlewares
+//Middlewares
 app.use(express.json());
 app.use(cors());
 
@@ -64,8 +64,16 @@ app.get("/api/weather", async (req, res) => {
 });
 
 //Database Connection
-mongoose.connection.once("open", () => {
-  app.listen(PORT, () =>
-    console.log(`Connected to MongoDB: Server running on port ${PORT}`)
-  );
-});
+
+async function startServer() {
+  await mongoose.connect(process.env.DATABASE_URI, {
+    useNewUrlParser: true,
+    useUnifiedTopology: true,
+  });
+}
+
+app.listen(PORT, () =>
+  console.log(`Connected to MongoDB: Server running on port ${PORT}`)
+);
+
+module.exports = { app, startServer };
