@@ -44,6 +44,7 @@ export default {
         )
         .then((response) => {
           this.weather = response.data;
+          console.log(response);
         })
         .catch((error) => {
           console.log(error);
