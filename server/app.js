@@ -22,63 +22,40 @@ app.use(cors());
 app.use("/user", userRoutes); // localhost:5000/user
 
 //Influx DB
-const influx = new Influx.InfluxDB({
-  host: config.influx.host,
-  port: config.influx.port,
-  database: config.influx.database,
-});
+// const influx = new Influx.InfluxDB({
+//   host: config.influx.host,
+//   port: config.influx.port,
+//   database: config.influx.database,
+// });
 app.get("/api/weather", async (req, res) => {
-    console.log(req.query.lat)
-  try {
-    console.log("ABCD");
-    const { data } = await axios.get(
-      `http://api.openweathermap.org/data/2.5/weather?lat=${req.query.lat}&lon=${req.query.lon}&appid=${config.apiKey}`
-    );
-    console.log("EFFFFF");
+  const { longitude, latitude } = req.query;
 
+  try {
+    const { data } = await axios.get(
+      `http://api.weatherapi.com/v1/current.json?key=${config.apiKey}&q=${latitude},${longitude}`
+    );
     // Write weather data to InfluxDB
-    await influx.writePoints([
-      {
-        measurement: "weather",
-        tags: {
-          location: `${req.query.lat},${req.query.lon}`,
-        },
-        fields: {
-          temperature: data.main.temp,
-          humidity: data.main.humidity,
-          pressure: data.main.pressure,
-          wind_speed: data.wind.speed,
-        },
-        timestamp: new Date(),
-      },
-    ]);
+    // await influx.writePoints([
+    //   {
+    //     measurement: "weather",
+    //     fields: {
+    //       name: data.location.name,
+    //       temperature: data.current.temp_c,
+    //       condition: data.current.condition.text,
+    //       pressure: data.current.pressure_mb,
+    //       wind_speed: data.current.wind_mph,
+    //     },
+    //     timestamp: new Date(),
+    //   },
+    // ]);
 
     // Send weather data to client
     res.send({
-      temperature: data.main.temp,
-      humidity: data.main.humidity,
-      pressure: data.main.pressure,
-      wind_speed: data.wind.speed,
-    });
-  } catch (error) {
-    console.error(error);
-    res.status(500).send({ message: "Error fetching weather data" });
-  }
-});
-
-//Weather API
-app.get("/api/weather", async (req, res) => {
-  console.log("AAAA");
-  try {
-    const { data } = await axios.get(
-      `http://api.openweathermap.org/data/2.5/weather?lat=${req.query.lat}&lon=${req.query.lon}&appid=${config.apiKey}`
-    );
-
-    res.send({
-      temperature: data.main.temp,
-      humidity: data.main.humidity,
-      pressure: data.main.pressure,
-      wind_speed: data.wind.speed,
+      name: data.location.name,
+      temperature: data.current.temp_c,
+      condition: data.current.condition.text,
+      pressure: data.current.pressure_mb,
+      wind_speed: data.current.wind_mph,
     });
   } catch (error) {
     console.error(error);
