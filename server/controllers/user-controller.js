@@ -1,4 +1,6 @@
 const userService = require("../services/user.service");
+const jwt = require("jsonwebtoken");
+const JWT_SECRET = process.env.JWT_SECRET;
 
 module.exports.getAllUsers = async (req, res) => {
   try {
@@ -25,11 +27,24 @@ module.exports.getById = async (req, res) => {
 
 //----------------------------------------------------------------------------------------------
 
+module.exports.getUserByEmail = async (req, res) => {
+  const email = req.params.email;
+  try {
+    const user = await userService.getUserByEmail(email);
+    return res.status(200).json({ user });
+  } catch (err) {
+    console.log(err);
+    return res.status(500).json({ message: "Internal Server Error" });
+  }
+};
+
+//----------------------------------------------------------------------------------------------
+
 module.exports.addUser = async (req, res) => {
   const { name, email, cnic, password } = req.body;
 
   try {
-    const user = await userService.addUser(name, email, cnic, password );
+    const user = await userService.addUser(name, email, cnic, password);
     return res.status(201).json({ user });
   } catch (err) {
     console.log(err);
@@ -51,7 +66,6 @@ module.exports.updateUser = async (req, res) => {
   }
 };
 
-
 //----------------------------------------------------------------------------------------------
 
 module.exports.deleteUser = async (req, res) => {
@@ -66,3 +80,25 @@ module.exports.deleteUser = async (req, res) => {
 };
 
 //----------------------------------------------------------------------------------------------
+module.exports.login = async (req, res) => {
+  const { email, password } = req.body;
+
+  try {
+    const user = await userService.getUserByEmail(email);
+    if (!user) {
+      return res.status(401).json({ message: "Invalid credentials" });
+    }
+
+    const isMatch = await user.comparePassword(password);
+    if (!isMatch) {
+      return res.status(401).json({ message: "Invalid credentials" });
+    }
+    console.log(user);
+    const token = jwt.sign({ id: user._id }, JWT_SECRET);
+    res.cookie('token', token);
+    return res.status(200).json({ message: "Login successful" });
+  } catch (err) {
+    console.log(err);
+    return res.status(500).json({ message: "Internal Server Error" });
+  }
+};

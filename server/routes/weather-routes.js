@@ -1,11 +1,8 @@
 const express = require("express");
 const router = express.Router();
-const userController = require("../controllers/user-controller");
+const weatherController = require("../controllers/weather-controller");
+const verifyToken = require("../middleware/verifyToken");
 
-router.get("/", userController.getAllUsers);
-router.post("/", userController.addUser);
-router.get("/:id", userController.getById);
-router.put("/:id", userController.updateUser);
-router.delete("/:id", userController.deleteUser);
+router.get("/weather",  weatherController.getWeather);
 
 module.exports = router;

@@ -1,4 +1,5 @@
 const User = require("../model/User");
+const bcrypt = require('bcrypt');
 
 module.exports.getAllUsers = async () => {
   const users = await User.find();
@@ -20,8 +21,21 @@ module.exports.getUserById = async (id) => {
 
 //----------------------------------------------------------------------------------------------
 
+module.exports.getUserByEmail = async (email) => {
+  const user = await User.findOne({ email });
+  if (!user) {
+    throw new Error("No user found with the provided email");
+  }
+  return user;
+};
+
+//----------------------------------------------------------------------------------------------
+
 module.exports.addUser = async (name, email, cnic, password) => {
-  const user = new User({ name, email, cnic, password });
+  const saltRounds = 10;
+  const hashedPassword = await bcrypt.hash(password, saltRounds);
+
+  const user = new User({ name, email, cnic, password: hashedPassword });
   await user.save();
   return user;
 };
