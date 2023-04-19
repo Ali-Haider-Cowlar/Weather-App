@@ -1,5 +1,5 @@
 module.exports = {
-  apiKey: "67aabb32ba8bab20e4e892814f90d02a",
+  apiKey: "766133dc1c054f40a3e70046231904",
   influx: {
     host: "localhost",
     port: 8086,
