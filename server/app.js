@@ -29,24 +29,23 @@ app.use("/user", userRoutes); // localhost:5000/user
 // });
 app.get("/api/weather", async (req, res) => {
   const { longitude, latitude } = req.query;
+
   try {
     const { data } = await axios.get(
       `http://api.weatherapi.com/v1/current.json?key=${config.apiKey}&q=${latitude},${longitude}`
     );
-    console.log(data);
 
     // Write weather data to InfluxDB
     // await influx.writePoints([
     //   {
     //     measurement: "weather",
-    //     tags: {
-    //       location: `${req.query.lat},${req.query.lon}`,
-    //     },
+
     //     fields: {
-    //       temperature: data.main.temp,
-    //       humidity: data.main.humidity,
-    //       pressure: data.main.pressure,
-    //       wind_speed: data.wind.speed,
+    //       name: data.location.name,
+    //       temperature: data.current.temp_c,
+    //       condition: data.current.condition.text,
+    //       pressure: data.current.pressure_mb,
+    //       wind_speed: data.current.wind_mph,
     //     },
     //     timestamp: new Date(),
     //   },
@@ -58,8 +57,10 @@ app.get("/api/weather", async (req, res) => {
       temperature: data.current.temp_c,
       condition: data.current.condition.text,
       pressure: data.current.pressure_mb,
+
       wind_speed: data.current.wind_kph,
       humidity: data.current.humidity
+
     });
   } catch (error) {
     console.error(error);

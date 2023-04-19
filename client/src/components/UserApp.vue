@@ -225,11 +225,6 @@ const usersList = computed(() => {
 });
 
 function addUser() {
-  console.log(newUserName.value);
-  console.log(newUserEmail.value);
-  console.log(newUserPassword.value);
-  console.log(newUserCnic.value);
-
   axios
     .post(`${API_URL}/user`, {
       name: newUserName.value,
