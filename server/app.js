@@ -34,10 +34,12 @@ app.get("/api/weather", async (req, res) => {
     const { data } = await axios.get(
       `http://api.weatherapi.com/v1/current.json?key=${config.apiKey}&q=${latitude},${longitude}`
     );
+
     // Write weather data to InfluxDB
     // await influx.writePoints([
     //   {
     //     measurement: "weather",
+
     //     fields: {
     //       name: data.location.name,
     //       temperature: data.current.temp_c,
@@ -55,7 +57,10 @@ app.get("/api/weather", async (req, res) => {
       temperature: data.current.temp_c,
       condition: data.current.condition.text,
       pressure: data.current.pressure_mb,
-      wind_speed: data.current.wind_mph,
+
+      wind_speed: data.current.wind_kph,
+      humidity: data.current.humidity
+
     });
   } catch (error) {
     console.error(error);

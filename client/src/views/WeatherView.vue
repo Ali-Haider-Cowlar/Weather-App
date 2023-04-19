@@ -17,6 +17,11 @@
             <span class="font-semibold">Wind speed:</span>
             {{ weather.wind_speed }}
           </p>
+
+          <p class="text-sm">
+            <span class="font-semibold">Humidity:</span>
+            {{ weather.humidity }}
+          </p>
         </div>
       </div>
     </div>
