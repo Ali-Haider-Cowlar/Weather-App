@@ -1,3 +1,5 @@
+/* eslint-disable no-undef */
+
 const axios = require("axios");
 const config = require("../config/config");
 

@@ -2,20 +2,20 @@ version: '3'
 services:
   front:
     build:
-      context: './Cowlar-Task-MERN-Stack-Frontend'
+      context: './client'
       dockerfile: Dockerfile
     ports:
-      - "3000:5000"
-    container_name: react-container
+      - "5173:5173"
+    container_name: vue-container
     networks:
       - mern-stack-network
     volumes:
-      - ./Cowlar-Task-MERN-Stack-Frontend:/app
+      - ./client:/app
     depends_on:
       - backend
   backend:
     build:
-      context: './Cowlar-Task-MERN-Stack-Backend'
+      context: './server'
       dockerfile: Dockerfile
     ports:
       - "5000:5000"
@@ -23,7 +23,7 @@ services:
     networks:
       - mern-stack-network
     volumes:
-      - ./Cowlar-Task-MERN-Stack-Backend:/app
+      - ./server:/app
     depends_on:
       - mongo
   mongo:

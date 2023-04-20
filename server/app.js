@@ -1,9 +1,9 @@
+/* eslint-disable no-undef */
 require("dotenv").config();
 const express = require("express");
 const mongoose = require("mongoose");
 const userRoutes = require("./routes/user-routes");
 const weatherRoutes = require("./routes/weather-routes");
-const Influx = require("influx");
 const verifyToken = require("./middleware/verifyToken");
 const cookieParser = require("cookie-parser");
 

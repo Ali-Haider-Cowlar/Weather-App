@@ -4,7 +4,10 @@
   "description": "",
   "main": "app.js",
   "scripts": {
-    "dev": "nodemon -L server.js"
+    "start": "nodemon -L server.js",
+    "dev": "nodemon -L server.js",
+    "lint": "eslint . --ext .vue,.js,.jsx,.cjs,.mjs --fix --ignore-path .gitignore",
+    "build": "npm run lint"
   },
   "author": "",
   "license": "ISC",
@@ -22,6 +25,8 @@
     "nodemon": "^2.0.15"
   },
   "devDependencies": {
+    "eslint": "^8.38.0",
+    "eslint-plugin-vue": "^9.11.0",
     "jest": "^29.5.0",
     "supertest": "^6.3.3"
   }

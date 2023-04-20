@@ -1,3 +1,5 @@
+/* eslint-disable no-undef */
+
 const userService = require("../services/user.service");
 const jwt = require("jsonwebtoken");
 const JWT_SECRET = process.env.JWT_SECRET;

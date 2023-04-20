@@ -1,3 +1,5 @@
+/* eslint-disable no-undef */
+
 const request = require("supertest");
 const userService = require("../services/user.service");
 const mongoose = require("mongoose");
@@ -8,8 +10,6 @@ beforeAll(() => startServer());
 afterAll(() => mongoose.disconnect());
 
 describe("User API", () => {
-  let testUserId;
-
   // Test for getAllUsers API
   describe("GET /user", () => {
     it("should return all users", async () => {
