@@ -93,10 +93,10 @@ module.exports.login = async (req, res) => {
     if (!isMatch) {
       return res.status(401).json({ message: "Invalid credentials" });
     }
-    console.log(user);
+
     const token = jwt.sign({ id: user._id }, JWT_SECRET);
-    res.cookie('token', token);
-    return res.status(200).json({ message: "Login successful" });
+
+    return res.status(200).json({ message: "Login successful", token }); // add token to the response object
   } catch (err) {
     console.log(err);
     return res.status(500).json({ message: "Internal Server Error" });

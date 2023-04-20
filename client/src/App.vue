@@ -18,7 +18,8 @@ import LogoSVG from "./assets/logo.svg?component";
             <li><RouterLink to="/">Home</RouterLink></li>
             <li><RouterLink to="/weather">Weather</RouterLink></li>
             <li><RouterLink to="/user">Users</RouterLink></li>
-            <li><RouterLink to="/signup">Sign Up</RouterLink></li>
+            <li><RouterLink to="/login">Login</RouterLink></li>
+            <li><RouterLink to="/signup">Create Account</RouterLink></li>
           </ul>
         </div>
       </div>

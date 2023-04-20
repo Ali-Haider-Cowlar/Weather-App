@@ -10,13 +10,12 @@
     </h1>
     <br />
 
-    <table class="table-auto border-collapse w-full shadow-lg">
+    <table class="border-collapse w-full shadow-lg">
       <thead class="bg-gray-800 text-white">
         <tr>
           <th class="border border-gray-400 p-2 text-left">Name</th>
           <th class="border border-gray-400 p-2 text-left">Email</th>
           <th class="border border-gray-400 p-2 text-left">CNIC</th>
-          <th class="border border-gray-400 p-2 text-left">Password</th>
           <th class="border border-gray-400 p-2 text-left">Creation Time</th>
           <th class="border border-gray-400 p-2 text-left">Actions</th>
         </tr>
@@ -27,7 +26,6 @@
           <td class="border border-gray-400 p-2">{{ user.name }}</td>
           <td class="border border-gray-400 p-2">{{ user.email }}</td>
           <td class="border border-gray-400 p-2">{{ user.cnic }}</td>
-          <td class="border border-gray-400 p-2">{{ user.password }}</td>
           <td class="border border-gray-400 p-2">
             {{ moment(user.creationTime).format("D-MM-YY, h:mm a") }}
           </td>
