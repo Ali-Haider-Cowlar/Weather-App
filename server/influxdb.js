@@ -1,4 +1,6 @@
-const { InfluxDB, Point } = require("@influxdata/influxdb-client");
+/* eslint-disable no-undef */
+const { InfluxDB } = require("@influxdata/influxdb-client");
+
 
 const token = process.env.INFLUXDB_TOKEN;
 const url = process.env.INFLUXDB_HOST || "https://us-east-1-1.aws.cloud2.influxdata.com";

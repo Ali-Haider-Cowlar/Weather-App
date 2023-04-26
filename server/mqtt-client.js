@@ -1,5 +1,8 @@
+/* eslint-disable no-undef */
+
 const mqtt = require('mqtt')
-const client = mqtt.connect('mqtt://localhost:1883')
+const client = mqtt.connect('mqtt://localhost:1883');
+
 
 client.on('connect', function () {
   client.subscribe('weather-station', function (err) {
@@ -9,7 +12,6 @@ client.on('connect', function () {
   })
 })
 
-client.on('message', function (topic, message) {
-  console.log('Received weather data:', message.toString())
-  localStorage.setItem('weather', message.toString())
-})
+
+
+module.exports = client;

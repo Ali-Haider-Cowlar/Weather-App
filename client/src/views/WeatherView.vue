@@ -1,3 +1,4 @@
+<!-- eslint-disable no-unused-vars -->
 <template>
   <div class="bg-gray-100 p-4 rounded-lg shadow-md">
     <div class="text-lg font-medium mb-4" :title="location">
@@ -29,7 +30,8 @@
 <script>
 import axios from "axios";
 const API_URL = "http://localhost:5000";
-
+import mqtt from "mqtt/dist/mqtt.min";
+const client = mqtt.connect("ws://localhost:8080");
 
 export default {
   data() {
@@ -39,30 +41,38 @@ export default {
   },
   created() {
     const token = localStorage.getItem("token");
-    navigator.geolocation.getCurrentPosition(async (position) => {
-       await axios
-        .get(`${API_URL}/api/weather?longitude=${position.coords.longitude}&latitude=${position.coords.latitude}`, {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        })
-        .then((response) => {
-          this.weather = response.data;
-          console.log(response.data)
-        })
-        .catch((error) => {
-          console.log(error);
-        });
-    });
-  },
-  computed: {
-    location() {
-      if (this.weather) {
-        return `${this.weather.temperature}°C at (${this.weather.latitude}, ${this.weather.longitude})`;
-      } else {
-        return "Loading weather data...";
+    client.subscribe("weather-station", function (err) {
+      if (!err) {
+        console.log("Subscribed to weather-station topic");
       }
-    },
+    });
+    client.on("message", function (topic, message) {
+      console.log("Received weather data:", message.toString());
+      const weatherData = JSON.parse(message.toString());
+      localStorage.setItem("weather", JSON.stringify(weatherData));
+    });
+
+    const updateWeatherData = () => {
+      navigator.geolocation.getCurrentPosition(async (position) => {
+        await axios
+          .get(
+            `${API_URL}/api/weather?longitude=${position.coords.longitude}&latitude=${position.coords.latitude}`,
+            {
+              headers: {
+                Authorization: `Bearer ${token}`,
+              },
+            }
+          )
+          .then((response) => {
+            this.weather = response.data;
+          })
+          .catch((error) => {
+            console.log(error);
+          });
+      });
+    };
+
+    setInterval(updateWeatherData, 5000);
   },
 };
 </script>
