@@ -10,7 +10,7 @@
     </h1>
     <br />
 
-    <table class="border-collapse w-full shadow-lg">
+    <table class="border-collapse w-full shadow-lg scrollable-tbody">
       <thead class="bg-gray-800 text-white">
         <tr>
           <th class="border border-gray-400 p-2 text-left">Name</th>
@@ -27,17 +27,19 @@
           <td class="border border-gray-400 p-2">{{ user.email }}</td>
           <td class="border border-gray-400 p-2">{{ user.cnic }}</td>
           <td class="border border-gray-400 p-2">
-            {{ moment(user.creationTime).format("D-MM-YY, h:mm a") }}
+            {{ moment(user.creationTime).format("MMMM Do YYYY, h:mm a") }}
           </td>
           <td class="border border-gray-400 p-2">
             <button
               id="button"
-              data-modal-toggle="modal"
+              data-modal-toggle="editModal"
               type="button"
               class="bg-yellow-600 hover:bg-yellow-700 text-white font-bold py-1 px-1 rounded focus:outline-none focus:shadow-outline inline-block"
+              @click="openEditModal(user)"
             >
               <i class="far fa-edit" aria-hidden="true"></i>
             </button>
+
             <button
               class="bg-red-600 hover:bg-red-700 text-white font-bold py-1 px-1 rounded focus:outline-none focus:shadow-outline inline-block ml-1"
               @click="deleteUser(user._id)"
@@ -52,22 +54,12 @@
     <br />
 
     <div>
-      <div class="flex justify-center p-4">
-        <button
-          id="button"
-          data-modal-toggle="modal"
-          type="button"
-          class="text-white bg-blue-500 hover:bg-blue-700 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800"
-        >
-          Add User
-        </button>
-      </div>
-
+      <!-- Edit Modal -->
       <div
-        id="modal"
+        id="editModal"
         tabindex="-1"
         aria-hidden="true"
-        class="fixed top-0 left-0 right-0 z-50 hidden w-full p-4 overflow-x-hidden overflow-y-auto md:inset-0 h-[calc(100%-1rem)] max-h-full"
+        class="fixed ml-[35%] mt-24 z-50 hidden w-96 p-4 overflow-x-hidden overflow-y-auto md:inset-0 h-[calc(100%-1rem)] max-h-full"
       >
         <div class="relative w-full max-w-2xl max-h-full">
           <!-- Modal content -->
@@ -79,13 +71,14 @@
               <h3
                 class="text-xl font-semibold text-gray-900 lg:text-2xl dark:text-white"
               >
-                User Registration
+                Edit User
               </h3>
               <button
-                id="closeButton"
-                data-modal-hide="modal"
+                id="editCloseButton"
+                data-modal-hide="editModal"
                 type="button"
                 class="text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm p-1.5 ml-auto inline-flex items-center dark:hover:bg-gray-600 dark:hover:text-white"
+                @click="closeModal('editModal')"
               >
                 <svg
                   class="w-5 h-5"
@@ -105,69 +98,69 @@
             <div class="p-6 space-y-6">
               <div>
                 <label
-                  for="name"
+                  for="editName"
                   class="block text-sm font-medium text-gray-700"
                   >Name</label
                 >
                 <div class="mt-1">
                   <input
                     type="text"
-                    name="name"
-                    id="name"
+                    name="editName"
+                    id="editName"
                     autocomplete="given-name"
                     class="shadow-sm focus:ring-blue-500 focus:border-blue-500 block w-full sm:text-sm border-gray-300 rounded-md"
-                    v-model="newUserName"
+                    v-model="editUserData.name"
                   />
                 </div>
               </div>
               <div>
                 <label
-                  for="email"
+                  for="editEmail"
                   class="block text-sm font-medium text-gray-700"
                   >Email address</label
                 >
                 <div class="mt-1">
                   <input
                     type="email"
-                    name="email"
-                    id="email"
+                    name="editEmail"
+                    id="editEmail"
                     autocomplete="email"
                     class="shadow-sm focus:ring-blue-500 focus:border-blue-500 block w-full sm:text-sm border-gray-300 rounded-md"
-                    v-model="newUserEmail"
+                    v-model="editUserData.email"
                   />
                 </div>
               </div>
               <div>
                 <label
-                  for="password"
+                  for="editPassword"
                   class="block text-sm font-medium text-gray-700"
                   >Password</label
                 >
                 <div class="mt-1">
                   <input
                     type="password"
-                    name="password"
-                    id="password"
+                    name="editPassword"
+                    id="editPassword"
                     autocomplete="current-password"
                     class="shadow-sm focus:ring-blue-500 focus:border-blue-500 block w-full sm:text-sm border-gray-300 rounded-md"
-                    v-model="newUserPassword"
+                    v-model="editUserData.password"
                   />
                 </div>
               </div>
               <div>
                 <label
-                  for="cnic"
+                  for="editCnic"
                   class="block text-sm font-medium text-gray-700"
                   >CNIC</label
                 >
                 <div class="mt-1">
                   <input
                     type="text"
-                    name="cnic"
-                    id="cnic"
+                    name="editCnic"
+                    id="editCnic"
                     autocomplete="given-name"
                     class="shadow-sm focus:ring-blue-500 focus:border-blue-500 block w-full sm:text-sm border-gray-300 rounded-md"
-                    v-model="newUserCnic"
+                    v-model="editUserData.cnic"
                   />
                 </div>
               </div>
@@ -176,14 +169,14 @@
             <div
               class="flex items-center p-6 space-x-2 border-t border-gray-200 rounded-b dark:border-gray-600"
             >
-              <button
-                type="button"
-                class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
-                @click="addUser"
-                data-modal-toggle="modal"
-              >
-                Create
-              </button>
+            <button
+  type="button"
+  class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
+  @click="updateUser(editUserData._id); closeModal('editModal')"
+  data-modal-hide="editModal"
+>
+  Save Changes
+</button>
             </div>
           </div>
         </div>
@@ -204,10 +197,6 @@ onMounted(() => {
 
 const users = ref([]);
 const API_URL = "http://localhost:5000";
-const newUserName = ref("");
-const newUserEmail = ref("");
-const newUserPassword = ref("");
-const newUserCnic = ref("");
 
 axios
   .get(`${API_URL}/user`)
@@ -222,24 +211,36 @@ const usersList = computed(() => {
   return users.value;
 });
 
-function addUser() {
+function deleteUser(id) {
   axios
-    .post(`${API_URL}/user`, {
-      name: newUserName.value,
-      email: newUserEmail.value,
-      password: newUserPassword.value,
-      cnic: newUserCnic.value,
+    .delete(`${API_URL}/user/${id}`)
+    .then((response) => {
+      users.value = users.value.filter((user) => user._id !== id);
+    })
+    .catch((error) => {
+      console.log(error);
+    });
+}
+
+const editUserData = ref({});
+
+function openEditModal(user) {
+  editUserData.value = { ...user };
+}
+
+function updateUser(id) {
+  axios
+    .put(`${API_URL}/user/${id}`, {
+      name: editUserData.value.name,
+      email: editUserData.value.email,
+      password: editUserData.value.password,
+      cnic: editUserData.value.cnic,
     })
     .then(() => {
       axios
         .get(`${API_URL}/user`)
         .then((response) => {
-          users.value = [];
-          newUserName.value = "";
-          newUserEmail.value = "";
-          newUserPassword.value = "";
-          newUserCnic.value = "";
-          users.value.push(...response.data.users);
+          users.value = response.data.users;
         })
         .catch((error) => {
           console.log(error);
@@ -250,24 +251,50 @@ function addUser() {
     });
 }
 
-function deleteUser(id) {
-  axios
-    .delete(`${API_URL}/user/${id}`)
-    .then((response) => {
-      users.value = users.value.filter((user) => user._id !== id);
-      console.log(response.data);
-    })
-    .catch((error) => {
-      console.log(error);
-    });
+function closeModal(modalId) {
+  const modal = document.getElementById(modalId);
+  modal.classList.add("hidden");
+  modal.setAttribute("aria-hidden", "true");
+  document.body.classList.remove("modal-open");
+  
 }
+
+// listen to click events on the page
+document.addEventListener("click", (event) => {
+  const modalToggle = event.target.closest("[data-modal-toggle]");
+  const modalHide = event.target.closest("[data-modal-hide]");
+
+
+  if (modalToggle) {
+    const modalId = modalToggle.dataset.modalToggle;
+    const modal = document.getElementById(modalId);
+    modal.classList.toggle("hidden");
+    modal.setAttribute("aria-hidden", "false");
+    document.body.classList.add("modal-open");
+  }
+
+
+  if (modalHide) {
+    const modalId = modalHide.dataset.modalHide;
+    const modal = document.getElementById(modalId);
+    modal.classList.add("hidden");
+    modal.setAttribute("aria-hidden", "true");
+    document.body.classList.remove("modal-open");
+  }
+});
 </script>
 
 <script>
 export default {
   name: "MyComponent",
   setup() {
-    return { usersList, newUserName, addUser, deleteUser };
+    return {
+      usersList,
+      deleteUser,
+      openEditModal,
+      editUserData,
+      updateUser,
+    };
   },
 };
 </script>
@@ -277,5 +304,15 @@ export default {
     max-height: calc(50vh - 4rem);
     overflow-y: auto;
   }
+}
+
+.scrollable-tbody {
+  display: block;
+  max-height: 380px; /* Adjust the height as per your requirement */
+  overflow-y: auto;
+}
+
+.scrollable-tbody tr {
+  width: 100%;
 }
 </style>

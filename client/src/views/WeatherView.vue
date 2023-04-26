@@ -30,6 +30,7 @@
 import axios from "axios";
 const API_URL = "http://localhost:5000";
 
+
 export default {
   data() {
     return {
@@ -39,17 +40,15 @@ export default {
   created() {
     const token = localStorage.getItem("token");
     navigator.geolocation.getCurrentPosition(async (position) => {
-      await axios
-        .get(
-          `${API_URL}/api/weather?longitude=${position.coords.longitude}&latitude=${position.coords.latitude}`,
-          {
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
-          }
-        )
+       await axios
+        .get(`${API_URL}/api/weather?longitude=${position.coords.longitude}&latitude=${position.coords.latitude}`, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        })
         .then((response) => {
           this.weather = response.data;
+          console.log(response.data)
         })
         .catch((error) => {
           console.log(error);

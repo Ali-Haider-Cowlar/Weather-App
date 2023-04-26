@@ -4,9 +4,10 @@ const express = require("express");
 const mongoose = require("mongoose");
 const userRoutes = require("./routes/user-routes");
 const weatherRoutes = require("./routes/weather-routes");
+
 const verifyToken = require("./middleware/verifyToken");
 const cookieParser = require("cookie-parser");
-
+require("./mqtt-client");
 
 const connectDB = require("./config/dbConn");
 const PORT = process.env.MONGO_PORT || 5000;

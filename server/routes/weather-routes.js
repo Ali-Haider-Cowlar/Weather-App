@@ -6,4 +6,6 @@ const weatherController = require("../controllers/weather-controller");
 
 router.get("/weather", weatherController.getWeather);
 
+
+
 module.exports = router;

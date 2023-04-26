@@ -1,8 +1,3 @@
-<script setup>
-import { RouterLink, RouterView } from "vue-router";
-import LogoSVG from "./assets/logo.svg?component";
-</script>
-
 <template>
   <div class="app-container">
     <nav class="navbar">
@@ -15,19 +10,44 @@ import LogoSVG from "./assets/logo.svg?component";
         </div>
         <div class="navbar-menu">
           <ul>
-            <li><RouterLink to="/">Home</RouterLink></li>
-            <li><RouterLink to="/weather">Weather</RouterLink></li>
-            <li><RouterLink to="/user">Users</RouterLink></li>
-            <li><RouterLink to="/login">Login</RouterLink></li>
-            <li><RouterLink to="/signup">Create Account</RouterLink></li>
+            <li v-if="isLoggedIn"><RouterLink to="/">Home</RouterLink></li>
+            <li v-if="isLoggedIn">
+              <RouterLink to="/weather">Weather</RouterLink>
+            </li>
+            <li v-if="isLoggedIn"><RouterLink to="/user">Users</RouterLink></li>
+            <li v-if="!isLoggedIn">
+              <RouterLink to="/signup">Create Account</RouterLink>
+            </li>
+            <li v-if="!isLoggedIn">
+              <RouterLink to="/login">Login</RouterLink>
+            </li>
+            <li v-if="isLoggedIn">
+              <button @click="logoutUser">Logout</button>
+            </li>
           </ul>
         </div>
       </div>
     </nav>
 
-    <RouterView />
+    <RouterView class="router-view" />
   </div>
 </template>
+
+<script setup>
+import { RouterLink, RouterView } from "vue-router";
+import LogoSVG from "./assets/logo.svg?component";
+import { computed } from "vue";
+
+const isLoggedIn = computed(() => {
+  const token = localStorage.getItem("token");
+  return token !== null && token !== undefined && token !== "";
+});
+
+function logoutUser() {
+  localStorage.removeItem("token");
+  location.reload(); // reload the page to reflect the updated state
+}
+</script>
 
 <style scoped>
 .navbar {
@@ -77,5 +97,9 @@ import LogoSVG from "./assets/logo.svg?component";
 
 .navbar-menu a:hover {
   color: #333;
+}
+
+.router-view {
+  margin-top: 5rem;
 }
 </style>

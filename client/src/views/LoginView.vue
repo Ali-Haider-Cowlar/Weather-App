@@ -1,9 +1,10 @@
 <!-- eslint-disable vue/multi-word-component-names -->
 
 <template>
-  <div class="flex justify-center items-center h-screen">
-    <div class="shadow-xl p-6 rounded-lg">
-      <h1 class="text-4xl font-bold text-gray-900 mb-4">
+  <div class="container">
+  <div class="flex justify-center items-center h-screen" >
+    <div class="shadow-xl p-6 rounded-lg mt-4 mt--96">
+      <h1 class="text-4xl font-bold text-gray-900 mb-4 ">
         User <span class="text-blue-500">Login</span>
       </h1>
 
@@ -59,6 +60,7 @@
       </form>
     </div>
   </div>
+</div>
 </template>
 
 <script setup>
@@ -79,16 +81,18 @@ function loginUser(event) {
     })
     .then((response) => {
       console.log("User login successful");
-      console.log(response.data.token);
       localStorage.setItem("token", response.data.token); // store token in localStorage
       newUserEmail.value = "";
       newUserPassword.value = "";
+      location.reload(); // reload the page to reflect the updated state
+
     })
     .catch((error) => {
       console.log(error);
     });
 }
 </script>
+
 
 <style scoped>
 /* Center the parent container horizontally and vertically */
@@ -97,9 +101,15 @@ function loginUser(event) {
   justify-content: center;
   align-items: center;
   max-width: 100%;
+  
 }
 /* Set the height of the parent container to the full screen height */
 .h-screen {
   height: 100vh;
 }
+.container{
+  margin-top: -5%;
+}
+
+
 </style>
