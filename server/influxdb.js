@@ -1,21 +1,34 @@
 /* eslint-disable no-undef */
 const { InfluxDB } = require("@influxdata/influxdb-client");
 
-
-const token = process.env.INFLUXDB_TOKEN;
-const url = process.env.INFLUXDB_HOST || "https://us-east-1-1.aws.cloud2.influxdata.com";
-const org = process.env.INFLUXDB_PORT || "Cowlar";
-const bucket = process.env.INFLUXDB_DB || "weather";
-const port = process.env.INFLUXDB_PORT || 443;
+const token =
+  "RLbGs3OBxS6_VF9MQIc2u58P1rDke30W-FLWMSj0a1esPW7Rc3aTSqZ5ROyPmiOzIHwK6tnJcqVzIhFEa1tLEA==";
+const url = "http://influxdb2.docker:8086";
+const org = "Cowlar";
+const bucket = "weather";
 
 class Influx {
   constructor() {
-    this.influx = new InfluxDB({ url, token, org, port });
-    this.writeApi = this.influx.getWriteApi(org, bucket, "ns");
+    this.influx = new InfluxDB({ url, token });
   }
 
   getWriteApi() {
+    this.writeApi = this.influx.getWriteApi(org, bucket, "ns");
     return this.writeApi;
+  }
+
+  async setPoint(point) {
+    const writeApi = this.getWriteApi();
+    writeApi.writePoint(point);
+
+    try {
+      await writeApi.close();
+      console.log('New point has been added: ', point);
+      return true;
+    } catch (e) {
+      console.error(e);
+      console.log("\nFinished ERROR");
+    }
   }
 }
 

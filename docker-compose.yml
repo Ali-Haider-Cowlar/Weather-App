@@ -26,6 +26,8 @@ services:
       - ./server:/app
     depends_on:
       - mongo
+      - mosquitto
+      - influxdb2
   mongo:
     image: mongo
     ports:
@@ -39,10 +41,55 @@ services:
       - MONGO_INITDB_ROOT_USERNAME=cowlar
       - MONGO_INITDB_ROOT_PASSWORD=cowlar123
       - MONGO_INITDB_DATABASE=test
+  mosquitto:
+    container_name: mbs.docker
+    image: eclipse-mosquitto:2.0.15
+    logging:
+      driver: "json-file"
+      options:
+        max-file: "2"
+        max-size: "100m"
+    restart: always
+    ports:
+      - "1884:1883"
+      - "8081:8081"
+    volumes:
+      - ./mosquitto/mosquitto.conf:/mosquitto/config/mosquitto.conf
+      # - ./mosquitto/passwordfile:/mosquitto/passwordfile
+      # - ./mosquitto/docker-entrypoint.sh:/docker-entrypoint.sh
+      - mosquitto-data-vol:/mosquitto/data
+      - mosquitto-log-vol:/mosquitto/log
+
+    networks:  
+       - mern-stack-network
+
+  influxdb2:
+    container_name: influxdb2.docker
+    image: influxdb:2.6-alpine
+    ports:
+      - "${INFLUXDB_PORT}:8086"
+    environment:
+      - DOCKER_INFLUXDB_INIT_USERNAME=${INFLUXDB2_INIT_USERNAME}
+      - DOCKER_INFLUXDB_INIT_PASSWORD=${INFLUXDB2_INIT_PASSWORD}
+      - DOCKER_INFLUXDB_INIT_ORG=${INFLUXDB2_INIT_ORG}
+      - DOCKER_INFLUXDB_INIT_BUCKET=${INFLUXDB2_INIT_BUCKET}
+      - DOCKER_INFLUXDB_INIT_ADMIN_TOKEN=${DOCKER_INFLUXDB_INIT_ADMIN_TOKEN}
+      - DOCKER_INFLUXDB_INIT_MODE=setup
+    volumes:
+      - influxdb2-vol:/var/lib/influxdb2
+      - influxdb2-config-vol:/etc/influxdb2
+      - ./data/automa/:/usr/backups/
+    networks:
+      - mern-stack-network
+
 networks:
   mern-stack-network:
 volumes:
   mongoData:
+  mosquitto-data-vol:
+  mosquitto-log-vol:
+  influxdb2-vol:
+  influxdb2-config-vol:
 
 
 

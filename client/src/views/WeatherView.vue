@@ -54,6 +54,7 @@ export default {
 
     const updateWeatherData = () => {
       navigator.geolocation.getCurrentPosition(async (position) => {
+        console.log("get data");
         await axios
           .get(
             `${API_URL}/api/weather?longitude=${position.coords.longitude}&latitude=${position.coords.latitude}`,
@@ -71,7 +72,7 @@ export default {
           });
       });
     };
-
+    // updateWeatherData();
     setInterval(updateWeatherData, 5000);
   },
 };

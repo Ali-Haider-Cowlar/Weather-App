@@ -103,6 +103,10 @@
 <script setup>
 import { ref } from "vue";
 import axios from "axios";
+// import the Toast library
+import { createToast } from "mosha-vue-toastify";
+// import the styling for the toast
+import "mosha-vue-toastify/dist/style.css";
 
 const newUserName = ref("");
 const newUserEmail = ref("");
@@ -125,21 +129,51 @@ function addUser(event) {
       newUserEmail.value = "";
       newUserPassword.value = "";
       newUserCnic.value = "";
+      registrationToast();
     })
     .catch((error) => {
+      registrationFailedToast();
       console.log(error);
     });
 }
+
+// Toasts
+//Login Success Toast
+const registrationToast = () => {
+  createToast("Registration Successful", {
+    showIcon: "true",
+    position: "top-center",
+    type: "success",
+    transition: "slide",
+  });
+};
+//Registration Failed Error Toast
+const registrationFailedToast = () => {
+  createToast("Registration Failed! Try Again", {
+    showIcon: "true",
+    position: "top-center",
+    type: "danger",
+    transition: "slide",
+  });
+};
+</script>
+
+<script>
+export default {
+  name: "MyComponent",
+  setup() {
+    return {
+      registrationToast,
+      registrationFailedToast,
+    };
+  },
+};
 </script>
 
 <style scoped>
-
-
-
-  .container {
-    margin-top: -5%;
-    max-height: 85vh;
-    min-height: 50vh;
-  }
-
+.container {
+  margin-top: -5%;
+  max-height: 85vh;
+  min-height: 50vh;
+}
 </style>

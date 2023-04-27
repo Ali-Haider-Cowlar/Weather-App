@@ -4,7 +4,7 @@ import { ref } from "vue";
 const receiveNews = ref("");
 let client;
 const connect = () => {
-  client = mqtt.connect("ws://localhost:8080");
+  client = mqtt.connect("ws://localhost:8081");
   return client;
 };
 
