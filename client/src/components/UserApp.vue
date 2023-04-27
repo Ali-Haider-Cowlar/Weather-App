@@ -169,14 +169,17 @@
             <div
               class="flex items-center p-6 space-x-2 border-t border-gray-200 rounded-b dark:border-gray-600"
             >
-            <button
-  type="button"
-  class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
-  @click="updateUser(editUserData._id); closeModal('editModal')"
-  data-modal-hide="editModal"
->
-  Save Changes
-</button>
+              <button
+                type="button"
+                class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
+                @click="
+                  updateUser(editUserData._id);
+                  closeModal('editModal');
+                "
+                data-modal-hide="editModal"
+              >
+                Save Changes
+              </button>
             </div>
           </div>
         </div>
@@ -190,6 +193,10 @@ import { ref, computed, onMounted } from "vue";
 import axios from "axios";
 import { initFlowbite } from "flowbite";
 import moment from "moment";
+// import the Toast library
+import { createToast } from "mosha-vue-toastify";
+// import the styling for the toast
+import "mosha-vue-toastify/dist/style.css";
 
 onMounted(() => {
   initFlowbite();
@@ -214,8 +221,9 @@ const usersList = computed(() => {
 function deleteUser(id) {
   axios
     .delete(`${API_URL}/user/${id}`)
-    .then((response) => {
+    .then(() => {
       users.value = users.value.filter((user) => user._id !== id);
+      deleteToast();
     })
     .catch((error) => {
       console.log(error);
@@ -241,6 +249,7 @@ function updateUser(id) {
         .get(`${API_URL}/user`)
         .then((response) => {
           users.value = response.data.users;
+          editToast();
         })
         .catch((error) => {
           console.log(error);
@@ -256,14 +265,12 @@ function closeModal(modalId) {
   modal.classList.add("hidden");
   modal.setAttribute("aria-hidden", "true");
   document.body.classList.remove("modal-open");
-  
 }
 
 // listen to click events on the page
 document.addEventListener("click", (event) => {
   const modalToggle = event.target.closest("[data-modal-toggle]");
   const modalHide = event.target.closest("[data-modal-hide]");
-
 
   if (modalToggle) {
     const modalId = modalToggle.dataset.modalToggle;
@@ -273,7 +280,6 @@ document.addEventListener("click", (event) => {
     document.body.classList.add("modal-open");
   }
 
-
   if (modalHide) {
     const modalId = modalHide.dataset.modalHide;
     const modal = document.getElementById(modalId);
@@ -282,6 +288,26 @@ document.addEventListener("click", (event) => {
     document.body.classList.remove("modal-open");
   }
 });
+
+// Toasts
+//Edit Toast
+const editToast = () => {
+  createToast("Credentials Updated", {
+    showIcon: "true",
+    position: "top-center",
+    type: "success",
+    transition: "slide",
+  });
+};
+//Delete Toast
+const deleteToast = () => {
+  createToast("User Removed", {
+    showIcon: "true",
+    position: "top-center",
+    type: "success",
+    transition: "slide",
+  });
+};
 </script>
 
 <script>
@@ -294,6 +320,8 @@ export default {
       openEditModal,
       editUserData,
       updateUser,
+      editToast,
+      deleteToast,
     };
   },
 };
@@ -305,11 +333,27 @@ export default {
     overflow-y: auto;
   }
 }
-
 .scrollable-tbody {
   display: block;
   max-height: 380px; /* Adjust the height as per your requirement */
-  overflow-y: auto;
+  overflow-y: scroll;
+}
+
+.scrollable-tbody::-webkit-scrollbar {
+  width: 8px;
+}
+
+.scrollable-tbody::-webkit-scrollbar-track {
+  background-color: #f1f1f1;
+}
+
+.scrollable-tbody::-webkit-scrollbar-thumb {
+  background-color: #888;
+  border-radius: 4px;
+}
+
+.scrollable-tbody::-webkit-scrollbar-thumb:hover {
+  background-color: #555;
 }
 
 .scrollable-tbody tr {

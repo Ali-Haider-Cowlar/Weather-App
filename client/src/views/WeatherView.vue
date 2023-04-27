@@ -1,7 +1,7 @@
 <!-- eslint-disable no-unused-vars -->
 <template>
   <div class="bg-gray-100 p-4 rounded-lg shadow-md">
-    <div class="text-lg font-medium mb-4" :title="location">
+    <div v-if="weather" class="text-lg font-medium mb-4" :title="weather.name">
       Weather for {{ weather ? weather.name : "your location" }}
     </div>
     <div v-if="weather">
@@ -30,8 +30,8 @@
 <script>
 import axios from "axios";
 const API_URL = "http://localhost:5000";
-import mqtt from "mqtt/dist/mqtt.min";
-const client = mqtt.connect("ws://localhost:8080");
+import { connectMqttClient } from "../mqttConnection";
+const { client } = connectMqttClient();
 
 export default {
   data() {

@@ -15,17 +15,20 @@ module.exports.getWeather = async (req, res) => {
     );
     const { pressure_mb, wind_mph } = data.current;
     const location = data.location.name;
+    const condition = data.current.condition.text;
     const temperature = data.current.temp_c;
     const point = new Point("weather")
       .tag("location", location)
+      .tag("condition", condition)
       .floatField("temperature", temperature)
       .floatField("pressure", pressure_mb)
       .floatField("wind_speed", wind_mph);
     writeApi.writePoint(point);
 
     const weatherData = {
-      location: location,
+      name: location,
       temperature: temperature,
+      condition: condition,
       wind: wind_mph,
       pressure: pressure_mb,
     };
@@ -38,26 +41,6 @@ module.exports.getWeather = async (req, res) => {
       pressure: pressure_mb,
       wind_speed: wind_mph,
     });
-
-    setInterval(() => {
-      axios.get(
-        `http://api.weatherapi.com/v1/current.json?key=${config.apiKey}&q=${latitude},${longitude}`
-      ).then(response => {
-        const { data } = response;
-        const { pressure_mb, wind_mph } = data.current;
-        const location = data.location.name;
-        const temperature = data.current.temp_c;
-        const weatherData = {
-          location: location,
-          temperature: temperature,
-          wind: wind_mph,
-          pressure: pressure_mb,
-        };
-        client.publish("weather-station", JSON.stringify(weatherData));
-      }).catch(error => {
-        console.error(error);
-      });
-    }, 10000);
   } catch (error) {
     console.error(error);
     res.status(500).send({ message: "Error fetching weather data" });
