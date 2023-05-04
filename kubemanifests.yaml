@@ -1,0 +1,564 @@
+apiVersion: v1
+items:
+  - apiVersion: v1
+    kind: Service
+    metadata:
+      annotations:
+        kompose.cmd: kompose convert -f docker-compose.yml -o kubemanifests.yaml
+        kompose.version: 1.22.0 (955b78124)
+      creationTimestamp: null
+      labels:
+        io.kompose.service: backend
+      name: backend
+    spec:
+      ports:
+        - name: "5000"
+          port: 5000
+          targetPort: 5000
+      selector:
+        io.kompose.service: backend
+    status:
+      loadBalancer: {}
+  - apiVersion: v1
+    kind: Service
+    metadata:
+      annotations:
+        kompose.cmd: kompose convert -f docker-compose.yml -o kubemanifests.yaml
+        kompose.version: 1.22.0 (955b78124)
+      creationTimestamp: null
+      labels:
+        io.kompose.service: front
+      name: front
+    spec:
+      ports:
+        - name: "5175"
+          port: 5175
+          targetPort: 80
+      selector:
+        io.kompose.service: front
+    status:
+      loadBalancer: {}
+  - apiVersion: v1
+    kind: Service
+    metadata:
+      annotations:
+        kompose.cmd: kompose convert -f docker-compose.yml -o kubemanifests.yaml
+        kompose.version: 1.22.0 (955b78124)
+      creationTimestamp: null
+      labels:
+        io.kompose.service: influxdb2
+      name: influxdb2
+    spec:
+      ports:
+        - name: "8086"
+          port: 8086
+          targetPort: 8086
+      selector:
+        io.kompose.service: influxdb2
+    status:
+      loadBalancer: {}
+  - apiVersion: v1
+    kind: Service
+    metadata:
+      annotations:
+        kompose.cmd: kompose convert -f docker-compose.yml -o kubemanifests.yaml
+        kompose.version: 1.22.0 (955b78124)
+      creationTimestamp: null
+      labels:
+        io.kompose.service: mongo
+      name: mongo
+    spec:
+      ports:
+        - name: "27017"
+          port: 27017
+          targetPort: 27017
+      selector:
+        io.kompose.service: mongo
+    status:
+      loadBalancer: {}
+  - apiVersion: v1
+    kind: Service
+    metadata:
+      annotations:
+        kompose.cmd: kompose convert -f docker-compose.yml -o kubemanifests.yaml
+        kompose.version: 1.22.0 (955b78124)
+      creationTimestamp: null
+      labels:
+        io.kompose.service: mosquitto
+      name: mosquitto
+    spec:
+      ports:
+        - name: "1884"
+          port: 1884
+          targetPort: 1883
+        - name: "8081"
+          port: 8081
+          targetPort: 8081
+      selector:
+        io.kompose.service: mosquitto
+    status:
+      loadBalancer: {}
+  - apiVersion: v1
+    kind: Service
+    metadata:
+      annotations:
+        kompose.cmd: kompose convert -f docker-compose.yml -o kubemanifests.yaml
+        kompose.version: 1.22.0 (955b78124)
+      creationTimestamp: null
+      labels:
+        io.kompose.service: nginx
+      name: nginx
+    spec:
+      ports:
+        - name: "443"
+          port: 443
+          targetPort: 443
+      selector:
+        io.kompose.service: nginx
+    status:
+      loadBalancer: {}
+  - apiVersion: apps/v1
+    kind: Deployment
+    metadata:
+      annotations:
+        kompose.cmd: kompose convert -f docker-compose.yml -o kubemanifests.yaml
+        kompose.version: 1.22.0 (955b78124)
+      creationTimestamp: null
+      labels:
+        io.kompose.service: backend
+      name: backend
+    spec:
+      replicas: 1
+      selector:
+        matchLabels:
+          io.kompose.service: backend
+      strategy:
+        type: Recreate
+      template:
+        metadata:
+          annotations:
+            kompose.cmd: kompose convert -f docker-compose.yml -o kubemanifests.yaml
+            kompose.version: 1.22.0 (955b78124)
+          creationTimestamp: null
+          labels:
+            io.kompose.network/mern-stack-network: "true"
+            io.kompose.service: backend
+        spec:
+          containers:
+            - image: weather-app_backend
+              name: express-container
+              ports:
+                - containerPort: 5000
+              resources: {}
+              volumeMounts:
+                - mountPath: /app
+                  name: backend-claim0
+          restartPolicy: Always
+          volumes:
+            - name: backend-claim0
+              persistentVolumeClaim:
+                claimName: backend-claim0
+    status: {}
+  - apiVersion: v1
+    kind: PersistentVolumeClaim
+    metadata:
+      creationTimestamp: null
+      labels:
+        io.kompose.service: backend-claim0
+      name: backend-claim0
+    spec:
+      accessModes:
+        - ReadWriteOnce
+      resources:
+        requests:
+          storage: 100Mi
+    status: {}
+  - apiVersion: networking.k8s.io/v1
+    kind: NetworkPolicy
+    metadata:
+      creationTimestamp: null
+      name: mern-stack-network
+    spec:
+      ingress:
+        - from:
+            - podSelector:
+                matchLabels:
+                  io.kompose.network/mern-stack-network: "true"
+      podSelector:
+        matchLabels:
+          io.kompose.network/mern-stack-network: "true"
+  - apiVersion: apps/v1
+    kind: Deployment
+    metadata:
+      annotations:
+        kompose.cmd: kompose convert -f docker-compose.yml -o kubemanifests.yaml
+        kompose.version: 1.22.0 (955b78124)
+      creationTimestamp: null
+      labels:
+        io.kompose.service: front
+      name: front
+    spec:
+      replicas: 1
+      selector:
+        matchLabels:
+          io.kompose.service: front
+      strategy:
+        type: Recreate
+      template:
+        metadata:
+          annotations:
+            kompose.cmd: kompose convert -f docker-compose.yml -o kubemanifests.yaml
+            kompose.version: 1.22.0 (955b78124)
+          creationTimestamp: null
+          labels:
+            io.kompose.network/mern-stack-network: "true"
+            io.kompose.service: front
+        spec:
+          containers:
+            - image: weather-app-front
+              name: vue-container
+              ports:
+                - containerPort: 80
+              resources: {}
+              volumeMounts:
+                - mountPath: /app
+                  name: front-claim0
+          restartPolicy: Always
+          volumes:
+            - name: front-claim0
+              persistentVolumeClaim:
+                claimName: front-claim0
+    status: {}
+  - apiVersion: v1
+    kind: PersistentVolumeClaim
+    metadata:
+      creationTimestamp: null
+      labels:
+        io.kompose.service: front-claim0
+      name: front-claim0
+    spec:
+      accessModes:
+        - ReadWriteOnce
+      resources:
+        requests:
+          storage: 100Mi
+    status: {}
+  - apiVersion: apps/v1
+    kind: Deployment
+    metadata:
+      annotations:
+        kompose.cmd: kompose convert -f docker-compose.yml -o kubemanifests.yaml
+        kompose.version: 1.22.0 (955b78124)
+      creationTimestamp: null
+      labels:
+        io.kompose.service: influxdb2
+      name: influxdb2
+    spec:
+      replicas: 1
+      selector:
+        matchLabels:
+          io.kompose.service: influxdb2
+      strategy:
+        type: Recreate
+      template:
+        metadata:
+          annotations:
+            kompose.cmd: kompose convert -f docker-compose.yml -o kubemanifests.yaml
+            kompose.version: 1.22.0 (955b78124)
+          creationTimestamp: null
+          labels:
+            io.kompose.network/mern-stack-network: "true"
+            io.kompose.service: influxdb2
+        spec:
+          containers:
+            - env:
+                - name: DOCKER_INFLUXDB_INIT_ADMIN_TOKEN
+                - name: DOCKER_INFLUXDB_INIT_BUCKET
+                - name: DOCKER_INFLUXDB_INIT_MODE
+                  value: setup
+                - name: DOCKER_INFLUXDB_INIT_ORG
+                - name: DOCKER_INFLUXDB_INIT_PASSWORD
+                - name: DOCKER_INFLUXDB_INIT_USERNAME
+              image: influxdb:2.6-alpine
+              name: influxdb2-docker
+              ports:
+                - containerPort: 8086
+              resources: {}
+              volumeMounts:
+                - mountPath: /var/lib/influxdb2
+                  name: influxdb2-vol
+                - mountPath: /etc/influxdb2
+                  name: influxdb2-config-vol
+                - mountPath: /usr/backups/
+                  name: influxdb2-claim2
+          restartPolicy: Always
+          volumes:
+            - name: influxdb2-vol
+              persistentVolumeClaim:
+                claimName: influxdb2-vol
+            - name: influxdb2-config-vol
+              persistentVolumeClaim:
+                claimName: influxdb2-config-vol
+            - name: influxdb2-claim2
+              persistentVolumeClaim:
+                claimName: influxdb2-claim2
+    status: {}
+  - apiVersion: v1
+    kind: PersistentVolumeClaim
+    metadata:
+      creationTimestamp: null
+      labels:
+        io.kompose.service: influxdb2-vol
+      name: influxdb2-vol
+    spec:
+      accessModes:
+        - ReadWriteOnce
+      resources:
+        requests:
+          storage: 100Mi
+    status: {}
+  - apiVersion: v1
+    kind: PersistentVolumeClaim
+    metadata:
+      creationTimestamp: null
+      labels:
+        io.kompose.service: influxdb2-config-vol
+      name: influxdb2-config-vol
+    spec:
+      accessModes:
+        - ReadWriteOnce
+      resources:
+        requests:
+          storage: 100Mi
+    status: {}
+  - apiVersion: v1
+    kind: PersistentVolumeClaim
+    metadata:
+      creationTimestamp: null
+      labels:
+        io.kompose.service: influxdb2-claim2
+      name: influxdb2-claim2
+    spec:
+      accessModes:
+        - ReadWriteOnce
+      resources:
+        requests:
+          storage: 100Mi
+    status: {}
+  - apiVersion: apps/v1
+    kind: Deployment
+    metadata:
+      annotations:
+        kompose.cmd: kompose convert -f docker-compose.yml -o kubemanifests.yaml
+        kompose.version: 1.22.0 (955b78124)
+      creationTimestamp: null
+      labels:
+        io.kompose.service: mongo
+      name: mongo
+    spec:
+      replicas: 1
+      selector:
+        matchLabels:
+          io.kompose.service: mongo
+      strategy:
+        type: Recreate
+      template:
+        metadata:
+          annotations:
+            kompose.cmd: kompose convert -f docker-compose.yml -o kubemanifests.yaml
+            kompose.version: 1.22.0 (955b78124)
+          creationTimestamp: null
+          labels:
+            io.kompose.network/mern-stack-network: "true"
+            io.kompose.service: mongo
+        spec:
+          containers:
+            - env:
+                - name: MONGO_INITDB_DATABASE
+                  value: test
+                - name: MONGO_INITDB_ROOT_PASSWORD
+                  value: cowlar123
+                - name: MONGO_INITDB_ROOT_USERNAME
+                  value: cowlar
+              image: mongo
+              name: mongo-container
+              ports:
+                - containerPort: 27017
+              resources: {}
+              volumeMounts:
+                - mountPath: /data/db
+                  name: mongo-data
+          restartPolicy: Always
+          volumes:
+            - name: mongo-data
+              persistentVolumeClaim:
+                claimName: mongo-data
+    status: {}
+  - apiVersion: v1
+    kind: PersistentVolumeClaim
+    metadata:
+      creationTimestamp: null
+      labels:
+        io.kompose.service: mongo-data
+      name: mongo-data
+    spec:
+      accessModes:
+        - ReadWriteOnce
+      resources:
+        requests:
+          storage: 100Mi
+    status: {}
+  - apiVersion: apps/v1
+    kind: Deployment
+    metadata:
+      annotations:
+        kompose.cmd: kompose convert -f docker-compose.yml -o kubemanifests.yaml
+        kompose.version: 1.22.0 (955b78124)
+      creationTimestamp: null
+      labels:
+        io.kompose.service: mosquitto
+      name: mosquitto
+    spec:
+      replicas: 1
+      selector:
+        matchLabels:
+          io.kompose.service: mosquitto
+      strategy:
+        type: Recreate
+      template:
+        metadata:
+          annotations:
+            kompose.cmd: kompose convert -f docker-compose.yml -o kubemanifests.yaml
+            kompose.version: 1.22.0 (955b78124)
+          creationTimestamp: null
+          labels:
+            io.kompose.network/mern-stack-network: "true"
+            io.kompose.service: mosquitto
+        spec:
+          containers:
+            - image: eclipse-mosquitto:2.0.15
+              name: mbs-docker
+              ports:
+                - containerPort: 1883
+                - containerPort: 8081
+              resources: {}
+              volumeMounts:
+                - mountPath: /mosquitto/config/mosquitto.conf
+                  name: mosquitto-claim0
+                - mountPath: /mosquitto/data
+                  name: mosquitto-data-vol
+                - mountPath: /mosquitto/log
+                  name: mosquitto-log-vol
+          restartPolicy: Always
+          volumes:
+            - name: mosquitto-claim0
+              persistentVolumeClaim:
+                claimName: mosquitto-claim0
+            - name: mosquitto-data-vol
+              persistentVolumeClaim:
+                claimName: mosquitto-data-vol
+            - name: mosquitto-log-vol
+              persistentVolumeClaim:
+                claimName: mosquitto-log-vol
+    status: {}
+  - apiVersion: v1
+    kind: PersistentVolumeClaim
+    metadata:
+      creationTimestamp: null
+      labels:
+        io.kompose.service: mosquitto-claim0
+      name: mosquitto-claim0
+    spec:
+      accessModes:
+        - ReadWriteOnce
+      resources:
+        requests:
+          storage: 100Mi
+    status: {}
+  - apiVersion: v1
+    kind: PersistentVolumeClaim
+    metadata:
+      creationTimestamp: null
+      labels:
+        io.kompose.service: mosquitto-data-vol
+      name: mosquitto-data-vol
+    spec:
+      accessModes:
+        - ReadWriteOnce
+      resources:
+        requests:
+          storage: 100Mi
+    status: {}
+  - apiVersion: v1
+    kind: PersistentVolumeClaim
+    metadata:
+      creationTimestamp: null
+      labels:
+        io.kompose.service: mosquitto-log-vol
+      name: mosquitto-log-vol
+    spec:
+      accessModes:
+        - ReadWriteOnce
+      resources:
+        requests:
+          storage: 100Mi
+    status: {}
+  - apiVersion: apps/v1
+    kind: Deployment
+    metadata:
+      annotations:
+        kompose.cmd: kompose convert -f docker-compose.yml -o kubemanifests.yaml
+        kompose.version: 1.22.0 (955b78124)
+      creationTimestamp: null
+      labels:
+        io.kompose.service: nginx
+      name: nginx
+    spec:
+      replicas: 1
+      selector:
+        matchLabels:
+          io.kompose.service: nginx
+      strategy:
+        type: Recreate
+      template:
+        metadata:
+          annotations:
+            kompose.cmd: kompose convert -f docker-compose.yml -o kubemanifests.yaml
+            kompose.version: 1.22.0 (955b78124)
+          creationTimestamp: null
+          labels:
+            io.kompose.network/mern-stack-network: "true"
+            io.kompose.service: nginx
+        spec:
+          containers:
+            - image: nginx:alpine
+              name: nginx-server
+              ports:
+                - containerPort: 443
+              resources: {}
+              volumeMounts:
+                - mountPath: /etc/nginx/nginx.conf
+                  name: nginx-claim0
+          restartPolicy: Always
+          volumes:
+            - name: nginx-claim0
+              persistentVolumeClaim:
+                claimName: nginx-claim0
+    status: {}
+  - apiVersion: v1
+    kind: PersistentVolumeClaim
+    metadata:
+      creationTimestamp: null
+      labels:
+        io.kompose.service: nginx-claim0
+      name: nginx-claim0
+    spec:
+      accessModes:
+        - ReadWriteOnce
+      resources:
+        requests:
+          storage: 100Mi
+    status: {}
+kind: List
+metadata: {}
+

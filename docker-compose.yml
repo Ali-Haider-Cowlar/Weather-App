@@ -41,6 +41,7 @@ services:
       - MONGO_INITDB_ROOT_USERNAME=cowlar
       - MONGO_INITDB_ROOT_PASSWORD=cowlar123
       - MONGO_INITDB_DATABASE=test
+      - DATABASE_URI = mongodb+srv://cowlar:cowlar123@atlascluster.muugiau.mongodb.net/test
   mosquitto:
     container_name: mbs.docker
     image: eclipse-mosquitto:2.0.15
@@ -85,7 +86,7 @@ services:
       - DOCKER_INFLUXDB_INIT_PASSWORD=${INFLUXDB2_INIT_PASSWORD}
       - DOCKER_INFLUXDB_INIT_ORG=${INFLUXDB2_INIT_ORG}
       - DOCKER_INFLUXDB_INIT_BUCKET=${INFLUXDB2_INIT_BUCKET}
-      - DOCKER_INFLUXDB_INIT_ADMIN_TOKEN=${DOCKER_INFLUXDB_INIT_ADMIN_TOKEN}
+      #- DOCKER_INFLUXDB_INIT_ADMIN_TOKEN=${DOCKER_INFLUXDB_INIT_ADMIN_TOKEN}
       - DOCKER_INFLUXDB_INIT_MODE=setup
     volumes:
       - influxdb2-vol:/var/lib/influxdb2
@@ -102,6 +103,3 @@ volumes:
   mosquitto-log-vol:
   influxdb2-vol:
   influxdb2-config-vol:
-
-
-

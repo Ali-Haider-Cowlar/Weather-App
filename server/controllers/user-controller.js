@@ -10,7 +10,7 @@ module.exports.getAllUsers = async (req, res) => {
     return res.status(200).json({ users });
   } catch (err) {
     console.log(err);
-    return res.status(500).json({ message: "Internal Server Error" });
+    return res.status(200).send({ message: "Internal Server Error" });
   }
 };
 

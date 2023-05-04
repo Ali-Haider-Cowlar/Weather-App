@@ -1,0 +1,206 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: mern-stack-namespace
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: front-deployment
+  labels:
+    app: front
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: front
+  template:
+    metadata:
+      labels:
+        app: front
+    spec:
+      containers:
+        - name: vue-container
+          image: <your-registry>/vue-image
+          ports:
+            - containerPort: 80
+          volumeMounts:
+            - name: client-volume
+              mountPath: /app
+      volumes:
+        - name: client-volume
+          hostPath:
+            path: ./client
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: backend-deployment
+  labels:
+    app: backend
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: backend
+  template:
+    metadata:
+      labels:
+        app: backend
+    spec:
+      containers:
+        - name: express-container
+          image: <your-registry>/express-image
+          ports:
+            - containerPort: 5000
+          volumeMounts:
+            - name: server-volume
+              mountPath: /app
+      volumes:
+        - name: server-volume
+          hostPath:
+            path: ./server
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: mongo-deployment
+  labels:
+    app: mongo
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: mongo
+  template:
+    metadata:
+      labels:
+        app: mongo
+    spec:
+      containers:
+        - name: mongo-container
+          image: mongo
+          ports:
+            - containerPort: 27017
+          volumeMounts:
+            - name: mongo-data-volume
+              mountPath: /data/db
+          env:
+            - name: MONGO_INITDB_ROOT_USERNAME
+              value: cowlar
+            - name: MONGO_INITDB_ROOT_PASSWORD
+              value: cowlar123
+            - name: MONGO_INITDB_DATABASE
+              value: test
+      volumes:
+        - name: mongo-data-volume
+          emptyDir: {}
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: mosquitto-deployment
+  labels:
+    app: mosquitto
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: mosquitto
+  template:
+    metadata:
+      labels:
+        app: mosquitto
+    spec:
+      containers:
+        - name: mosquitto-container
+          image: eclipse-mosquitto:2.0.15
+          ports:
+            - containerPort: 1883
+            - containerPort: 8081
+          volumeMounts:
+            - name: mosquitto-config-volume
+              mountPath: /mosquitto/config/mosquitto.conf
+            - name: mosquitto-data-volume
+              mountPath: /mosquitto/data
+            - name: mosquitto-log-volume
+              mountPath: /mosquitto/log
+          resources:
+            limits:
+              cpu: "0.5"
+              memory: "512Mi"
+          securityContext:
+            runAsUser: 1000
+      volumes:
+        - name: mosquitto-config-volume
+          hostPath:
+            path: ./mosquitto/mosquitto.conf
+                - name: mosquitto-data-volume
+          emptyDir: {}
+        - name: mosquitto-log-volume
+          emptyDir: {}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: front-service
+spec:
+  selector:
+    app: front
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 80
+  type: LoadBalancer
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: backend-service
+spec:
+  selector:
+    app: backend
+  ports:
+    - protocol: TCP
+      port: 5000
+      targetPort: 5000
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: mongo-service
+spec:
+  selector:
+    app: mongo
+  ports:
+    - protocol: TCP
+      port: 27017
+      targetPort: 27017
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: mosquitto-service
+spec:
+  selector:
+    app: mosquitto
+  ports:
+    - protocol: TCP
+      port: 1883
+      targetPort: 1883
+    - protocol: TCP
+      port: 8081
+      targetPort: 8081
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: influxdb2-service
+spec:
+  selector:
+    app: influxdb2
+  ports:
+    - protocol: TCP
+      port: 8086
+      targetPort: 8086
+
