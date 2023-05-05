@@ -50,7 +50,7 @@ items:
       name: influxdb2
     spec:
       ports:
-        - name: "8086"
+        - name: influxdb2
           port: 8086
           targetPort: 8086
       selector:
@@ -145,8 +145,8 @@ items:
             io.kompose.service: backend
         spec:
           containers:
-            - image: weather-app_backend
-              name: express-container
+            - name: express
+              image: weather-app-backend
               ports:
                 - containerPort: 5000
               resources: {}
@@ -273,12 +273,17 @@ items:
           containers:
             - env:
                 - name: DOCKER_INFLUXDB_INIT_ADMIN_TOKEN
+                  value: Ig755sY1mfN2qkdhouoMVju1LPjkrI333TSX6zGeQoHLC50nd7SnXfGv54Nm2kTdlcGXX_pjPR_pKt6vONd5IQ==
                 - name: DOCKER_INFLUXDB_INIT_BUCKET
+                  value: weather
                 - name: DOCKER_INFLUXDB_INIT_MODE
                   value: setup
                 - name: DOCKER_INFLUXDB_INIT_ORG
+                  value: Cowlar
                 - name: DOCKER_INFLUXDB_INIT_PASSWORD
+                  value: user123@asdkjhas8
                 - name: DOCKER_INFLUXDB_INIT_USERNAME
+                  value: user
               image: influxdb:2.6-alpine
               name: influxdb2-docker
               ports:
@@ -443,21 +448,21 @@ items:
                 - containerPort: 8081
               resources: {}
               volumeMounts:
-                - mountPath: /mosquitto/config/mosquitto.conf
-                  name: mosquitto-claim0
+                - mountPath: /mosquitto/config/mosquitto
+                  name: mosquitto-conf
                 - mountPath: /mosquitto/data
-                  name: mosquitto-data-vol
+                  name: mosquitto-data
                 - mountPath: /mosquitto/log
-                  name: mosquitto-log-vol
+                  name: mosquitto-log
           restartPolicy: Always
           volumes:
-            - name: mosquitto-claim0
-              persistentVolumeClaim:
-                claimName: mosquitto-claim0
-            - name: mosquitto-data-vol
+            - name: mosquitto-conf
+              hostPath:
+                path: /mosquitto/mosquitto
+            - name: mosquitto-data
               persistentVolumeClaim:
                 claimName: mosquitto-data-vol
-            - name: mosquitto-log-vol
+            - name: mosquitto-log
               persistentVolumeClaim:
                 claimName: mosquitto-log-vol
     status: {}
@@ -537,13 +542,13 @@ items:
                 - containerPort: 443
               resources: {}
               volumeMounts:
-                - mountPath: /etc/nginx/nginx.conf
+                - mountPath: /etc/nginx/nginx
                   name: nginx-claim0
           restartPolicy: Always
           volumes:
             - name: nginx-claim0
-              persistentVolumeClaim:
-                claimName: nginx-claim0
+              hostPath:
+                path: nginx
     status: {}
   - apiVersion: v1
     kind: PersistentVolumeClaim
