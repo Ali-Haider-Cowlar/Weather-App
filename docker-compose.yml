@@ -41,7 +41,7 @@ services:
       - MONGO_INITDB_ROOT_USERNAME=cowlar
       - MONGO_INITDB_ROOT_PASSWORD=cowlar123
       - MONGO_INITDB_DATABASE=test
-      - DATABASE_URI = mongodb+srv://cowlar:cowlar123@atlascluster.muugiau.mongodb.net/test
+      - DATABASE_URI= mongodb+srv://cowlar:cowlar123@atlascluster.muugiau.mongodb.net/test
   mosquitto:
     container_name: mbs.docker
     image: eclipse-mosquitto:2.0.15

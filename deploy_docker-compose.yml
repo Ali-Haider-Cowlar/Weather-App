@@ -1,0 +1,29 @@
+---
+- name: Deploy MEVN stack with Docker Compose
+  hosts: localhost
+  become: true
+  vars:
+    compose_file: ./docker-compose.yml
+  tasks:
+    - name: Install Docker Compose
+      become: true
+      apt:
+        name: docker-compose
+        state: present
+
+    - name: Copy Docker Compose file
+      copy:
+        src: "{{ compose_file }}"
+        dest: /home/{{ ansible_user }}/Documents/Weather-App/
+
+    - name: Run Docker Compose
+      docker_compose:
+        project_src: /home/{{ ansible_user }}/Documents/Weather-App/
+        project_name: mern-stack
+        state: present
+      environment:
+        INFLUXDB_PORT: "8086"
+        INFLUXDB2_INIT_USERNAME: ${INFLUXDB2_INIT_USERNAME}
+        INFLUXDB2_INIT_PASSWORD: ${INFLUXDB2_INIT_PASSWORD}
+        INFLUXDB2_INIT_ORG: ${INFLUXDB2_INIT_ORG}
+        INFLUXDB2_INIT_BUCKET: ${INFLUXDB2_INIT_BUCKET}
