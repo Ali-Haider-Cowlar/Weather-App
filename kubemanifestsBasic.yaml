@@ -1,0 +1,167 @@
+# Namespace
+apiVersion: v1
+kind: Namespace
+metadata:
+ name: mevn-stack
+
+
+---
+
+
+# Deployment - Backend
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+ name: backend
+ namespace: mevn-stack
+spec:
+ replicas: 1
+ selector:
+   matchLabels:
+     app: backend
+ template:
+   metadata:
+     labels:
+       app: backend
+   spec:
+     containers:
+       - name: backend
+         image: alihaidercowlar/weather-app-backend:latest
+         ports:
+           - containerPort: 5000
+         env:
+           - name: MONGO_URI
+             value: "mongodb://mongo:27017/test"
+         resources:
+           limits:
+             cpu: "0.5"
+             memory: "512Mi"
+         volumeMounts:
+           - name: backend-persistent-storage
+             mountPath: /app/uploads
+     volumes:
+       - name: backend-persistent-storage
+         persistentVolumeClaim:
+           claimName: backend-pvc
+
+
+---
+
+
+# Deployment - Frontend
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+ name: front
+ namespace: mevn-stack
+spec:
+ replicas: 1
+ selector:
+   matchLabels:
+     app: front
+ template:
+   metadata:
+     labels:
+       app: front
+   spec:
+     containers:
+       - name: front
+         image: alihaidercowlar/weather-app-frontend:latest
+         ports:
+           - containerPort: 80
+---
+
+
+# Service - Backend
+apiVersion: v1
+kind: Service
+metadata:
+ name: backend
+ namespace: mevn-stack
+spec:
+ selector:
+   app: backend
+ ports:
+   - protocol: TCP
+     port: 5000
+     targetPort: 5000
+
+
+---
+
+
+# Service - Frontend
+apiVersion: v1
+kind: Service
+metadata:
+ name: front
+ namespace: mevn-stack
+spec:
+ selector:
+   app: front
+ ports:
+   - protocol: TCP
+     port: 80
+     targetPort: 80
+
+
+---
+
+
+# Ingress
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+ name: mevn-stack-ingress
+ namespace: mevn-stack
+spec:
+ rules:
+   - http:
+       paths:
+         - path: /api
+           pathType: Prefix
+           backend:
+             service:
+               name: backend
+               port:
+                 number: 5000
+         - path: /
+           pathType: Prefix
+           backend:
+             service:
+               name: front
+               port:
+                 number: 80
+
+
+---
+
+
+# Secrets - MongoDB
+apiVersion: v1
+kind: Secret
+metadata:
+ name: mongo-secrets
+ namespace: mevn-stack
+type: Opaque
+data:
+ MONGO_INITDB_DATABASE: dGVzdA==   # Base64 encoded value for 'test'
+ MONGO_INITDB_ROOT_USERNAME: Y291bGFy   # Base64 encoded value for 'cowlar'
+ MONGO_INITDB_ROOT_PASSWORD: Y291bGFyMTIz   # Base64 encoded value for 'cowlar123'
+
+
+---
+
+
+# PersistentVolumeClaim - Backend
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+ name: backend-pvc
+ namespace: mevn-stack
+spec:
+ accessModes:
+   - ReadWriteOnce
+ resources:
+   requests:
+     storage: 1Gi
